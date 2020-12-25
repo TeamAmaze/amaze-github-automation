@@ -25,12 +25,14 @@ Endpoint:
 ---
 Endpoint supports following format:
 - POST with request body:
-```{
-    "title": "Dummy title",
+```
+{
+    "title": "Dummy title",  // mandatory
     "body": "Dummy body",
     "milestone": 15,
     "assignees": ["GitHub Usernames"]
     "labels": ["dummy"]
-}```
+}
+```
 - `token` as  query param. Compares with `API_TOKEN` added in environment variables. Both should match
 - `channel` as query param. Creates a label for the GitHub issue being created in format `From-channel` format.
