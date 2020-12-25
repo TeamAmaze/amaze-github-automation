@@ -94,7 +94,7 @@ func isRequestValid(r *http.Request) bool {
 		return false
 	}
 
-	if params.Get("channel") == null {
+	if params.Get("channel") == "" {
 		log.Printf("Invalid request: channel param not present")
 		return false
 	}
