@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -16,9 +15,6 @@ import (
 
 var (
 	signKey *rsa.PrivateKey
-	client  = &http.Client{
-		Timeout: time.Second * 10,
-	}
 )
 
 var installationTokenResponse struct {
@@ -34,24 +30,12 @@ func getInstallationToken(env Environment) (string, error) {
 	if err1 != nil {
 		return "", errors.New("failed to getInstallationTokenRequest")
 	}
-	log.Printf("Final request for getInstallationToken %v", request)
-	resp, err2 := client.Do(request)
-	fatal(err2)
-	if err2 != nil {
-		return "", errors.New("failed to perform client.Do(request)")
-	}
-	body, err4 := ioutil.ReadAll(resp.Body)
-	fatal(err4)
-	if err4 != nil {
-		return "", errors.New("failed to perform ioutil.ReadAll(resp.Body)")
-	}
-	log.Printf("Response from getInstallationToken is %v", string(body))
+	body, _ := processRequest(request)
 	err3 := json.NewDecoder(bytes.NewReader(body)).Decode(&installationTokenResponse)
 	fatal(err3)
 	if err3 != nil {
 		return "", errors.New("failed to perform json.NewDecoder(bytes.NewReader(body)).Decode(&installationTokenResponse)")
 	}
-	defer resp.Body.Close()
 	log.Printf("Found installation token response %v", installationTokenResponse)
 	if &installationTokenResponse.Token == nil {
 		return "", errors.New("failed to get installation token response")
@@ -60,31 +44,18 @@ func getInstallationToken(env Environment) (string, error) {
 }
 
 func getInstallationID(env Environment) (int, error) {
-	githubInstallationIDURI := fmt.Sprintf(GithubApiBase+"/repos/%v/%v/installation", env.repoOwner, env.repoName)
-	request, err := getInstallationIDRequest(githubInstallationIDURI, env)
+	request, err := getInstallationIDRequest(GithubInstallationIDURI, env)
 	fatal(err)
 	if err != nil {
 		return 0, errors.New("Failed to perform getInstallationIDRequest")
 	}
-	log.Printf("Create request for getInstallationID %v", request)
-	response, err1 := client.Do(request)
-	fatal(err1)
-	if err1 != nil {
-		return 0, errors.New("Failed to perform client.Do(request)")
-	}
-	body, err4 := ioutil.ReadAll(response.Body)
-	fatal(err4)
-	if err4 != nil {
-		return 0, errors.New("failed to perform ioutil.ReadAll(response.Body)")
-	}
-	log.Printf("Response from getInstallationID is %v", string(body))
+	body, _ := processRequest(request)
 	err2 := json.NewDecoder(bytes.NewReader(body)).Decode(&installationIDResponse)
 	fatal(err2)
 	if err2 != nil {
 		return 0, errors.New("Failed to perform json.NewDecoder(response.Body)")
 	}
-	defer response.Body.Close()
-	log.Printf("Found installation id response %v from uri %v", installationIDResponse, githubInstallationIDURI)
+	log.Printf("Found installation id response %v from uri %v", installationIDResponse, GithubInstallationIDURI)
 	if &installationIDResponse.ID == nil {
 		return 0, errors.New("failed to get installation token response")
 	}
@@ -110,7 +81,7 @@ func getInstallationTokenRequest(env Environment) (*http.Request, error) {
 	if err1 != nil {
 		return nil, errors.New("Failed to perform getInstallationTokenRequest")
 	}
-	githubInstallationTokenURI := fmt.Sprintf(GithubApiBase+"/app/installations/%v/access_tokens", installaionID)
+	githubInstallationTokenURI := fmt.Sprintf(GithubAPIBase+"/app/installations/%v/access_tokens", installaionID)
 	log.Printf("Create request for getInstallationTokenRequest %v", githubInstallationTokenURI)
 	postBody, err2 := json.Marshal(map[string][]string{
 		"repositories": []string{env.repoName},
