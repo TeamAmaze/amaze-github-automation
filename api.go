@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -68,7 +69,8 @@ func init() {
 	GithubIssueURI = fmt.Sprintf(GithubAPIBase+"/repos/%v/%v/issues", environment.repoOwner, environment.repoName)
 }
 
-func createIssue(w http.ResponseWriter, r *http.Request) {
+// CreateIssue main function responsible for creating GitHub issue
+func CreateIssue(w http.ResponseWriter, r *http.Request) {
 	if !isRequestValid(r) {
 		log.Printf("Invalid request with url %v and request %v", r.URL, r)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
