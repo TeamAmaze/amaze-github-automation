@@ -59,7 +59,6 @@ func init() {
 	environment.repoOwner = os.Getenv("GITHUB_REPO_OWNER")
 	environment.repoName = os.Getenv("GITHUB_REPO_NAME")
 	environment.githubAppIdentifier = os.Getenv("GITHUB_APP_IDENTIFIER")
-	environment.githubAppPrivateKey = os.Getenv("GITHUB_APP_PRIVATE_KEY")
 	environment.apiToken = os.Getenv("API_TOKEN")
 	envPrivateKey := os.Getenv("GITHUB_APP_PRIVATE_KEY")
 	environment.githubAppPrivateKey, _ = base64.StdEncoding.DecodeString(envPrivateKey)
