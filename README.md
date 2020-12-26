@@ -18,7 +18,7 @@ Deployment:
     - GITHUB_REPO_OWNER
     - GITHUB_REPO_NAME
     - GITHUB_APP_IDENTIFIER
-    - GITHUB_APP_PRIVATE_KEY
+    - GITHUB_APP_PRIVATE_KEY (Encode generated pem file above to base64)
     - API_TOKEN (see below)
 
 Endpoint:
@@ -35,4 +35,4 @@ Endpoint supports following format:
 }
 ```
 - `token` as  query param. Compares with `API_TOKEN` added in environment variables. Both should match
-- `channel` as query param. Creates a label for the GitHub issue being created in format `From-channel` format.
+- `channel` as query param. Creates and assigns a label for the GitHub issue being created in format `From-channel` format.
