@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -17,7 +18,7 @@ type Environment struct {
 	repoOwner           string // add GITHUB_REPO_OWNER in deployment variables
 	repoName            string // add GITHUB_REPO_NAME in deployment variables
 	githubAppIdentifier string // add GITHUB_APP_IDENTIFIER in deployment variables
-	githubAppPrivateKey string // add GITHUB_APP_PRIVATE_KEY in deployment variables
+	githubAppPrivateKey []byte // add GITHUB_APP_PRIVATE_KEY in base64 in deployment variables
 	apiToken            string // add API_TOKEN in deployment variables
 }
 
@@ -65,6 +66,8 @@ func init() {
 	environment.githubAppIdentifier = os.Getenv("GITHUB_APP_IDENTIFIER")
 	environment.githubAppPrivateKey = os.Getenv("GITHUB_APP_PRIVATE_KEY")
 	environment.apiToken = os.Getenv("API_TOKEN")
+	envPrivateKey := os.Getenv("GITHUB_APP_PRIVATE_KEY")
+	environment.githubAppPrivateKey, _ = base64.StdEncoding.DecodeString(envPrivateKey)
 	GithubInstallationIDURI = fmt.Sprintf(GithubAPIBase+"/repos/%v/%v/installation", environment.repoOwner, environment.repoName)
 	GithubIssueURI = fmt.Sprintf(GithubAPIBase+"/repos/%v/%v/issues", environment.repoOwner, environment.repoName)
 }
@@ -108,7 +111,7 @@ func isRequestValid(r *http.Request) bool {
 }
 
 func main() {
-	http.HandleFunc("/", createIssue)
+	http.HandleFunc("/", CreateIssue)
 	log.Fatal(http.ListenAndServe(":10000", nil))
 }
 

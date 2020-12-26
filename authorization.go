@@ -113,11 +113,13 @@ func getJwtHeaders(req *http.Request, jwt string) {
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %v", jwt))
 }
 
-func initSignKey(privateKey string) {
-	signKey, _ = jwt.ParseRSAPrivateKeyFromPEM([]byte(privateKey))
+func initSignKey(privateKey []byte) {
+	var err error
+	signKey, err = jwt.ParseRSAPrivateKeyFromPEM(privateKey)
+	fatal(err)
 }
 
-func getJwt(privateKey string, appIdentifier string) (string, error) {
+func getJwt(privateKey []byte, appIdentifier string) (string, error) {
 	initSignKey(privateKey)
 	t := jwt.New(jwt.GetSigningMethod("RS256"))
 	claims := t.Claims.(jwt.MapClaims)
