@@ -37,7 +37,7 @@ func getCreateIssueRequest(env Environment, issueRequest *IssueRequest, channel 
 	if err != nil {
 		return nil, errors.New("Failed to get installation token")
 	}
-	// issueRequest.Labels = append(issueRequest.Labels, "From-"+channel)
+	issueRequest.Labels = append(issueRequest.Labels, "From-"+channel)
 	postBody, _ := json.Marshal(issueRequest)
 	log.Printf("Create request for new issue using installation token %v and request body %v", token, string(postBody))
 	requestBody := bytes.NewBuffer(postBody)

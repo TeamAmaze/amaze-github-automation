@@ -40,24 +40,19 @@ type IssueRequest struct {
 	Body      string        `json:"body,omitempty"`
 	Assignees []string      `json:"assignees,omitempty"`
 	Milestone int           `json:"milestone,omitempty"`
-	Labels    []interface{} `json:"labels,omitempty`
+	Labels    []interface{} `json:"labels,omitempty"`
 }
 
 var (
-	environment   Environment
-	issueResponse IssueResponse
-	client        = &http.Client{
+	environment Environment
+	client      = &http.Client{
 		Timeout: time.Second * 10,
 	}
-	issueRequest IssueRequest
 
 	// GithubInstallationIDURI URL for fetching installation ID of GitHub app
 	GithubInstallationIDURI string
 	// GithubIssueURI URL for creating GitHub issue
 	GithubIssueURI string
-
-	// query params
-	channel string // adds label From - `channel` to github issue
 )
 
 func init() {
@@ -74,7 +69,8 @@ func init() {
 
 // CreateIssue main function responsible for creating GitHub issue
 func CreateIssue(w http.ResponseWriter, r *http.Request) {
-	if !isRequestValid(r) {
+	validRequest, issueRequest, channel := isRequestValid(r)
+	if !validRequest {
 		log.Printf("Invalid request with url %v and request %v", r.URL, r)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
@@ -84,30 +80,30 @@ func CreateIssue(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(issueResponse)
 }
 
-func isRequestValid(r *http.Request) bool {
+func isRequestValid(r *http.Request) (bool, IssueRequest, string) {
+	var issueRequest IssueRequest
 	body, _ := ioutil.ReadAll(r.Body)
 	log.Printf("Processing request for isRequestValid %v", string(body))
 	err := json.NewDecoder(bytes.NewReader(body)).Decode(&issueRequest)
 	fatal(err)
-	defer r.Body.Close()
 
 	params := r.URL.Query()
 	if environment.apiToken != params.Get("token") {
 		log.Printf("Invalid request: token doesn't match env %v", environment.apiToken)
-		return false
+		return false, IssueRequest{}, ""
 	}
 
 	if params.Get("channel") == "" {
 		log.Printf("Invalid request: channel param not present")
-		return false
+		return false, IssueRequest{}, ""
 	}
 
 	if issueRequest.Title == "" {
 		log.Printf("Crash message empty issue title")
-		return false
+		return false, IssueRequest{}, ""
 	}
-	channel = params.Get("channel")
-	return true
+	channel := params.Get("channel")
+	return true, issueRequest, channel
 }
 
 func main() {
