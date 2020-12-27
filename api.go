@@ -25,6 +25,7 @@ type Environment struct {
 // IssueResponse created by github api
 type IssueResponse struct {
 	Number  int    `json:"number,omitempty"`
+	URL     string `json:"url,omitempty"`
 	Message string `json:"message"`
 	Errors  []struct {
 		Value    interface{} `json:"value"`
