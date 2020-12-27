@@ -26,13 +26,13 @@ type Environment struct {
 type IssueResponse struct {
 	Number  int    `json:"number,omitempty"`
 	URL     string `json:"url,omitempty"`
-	Message string `json:"message"`
+	Message string `json:"message,omitempty"`
 	Errors  []struct {
 		Value    interface{} `json:"value"`
 		Resource string      `json:"resource"`
 		Field    string      `json:"field"`
 		Code     string      `json:"code"`
-	} `json:"errors"`
+	} `json:"errors,omitempty"`
 }
 
 // IssueRequest github issue request
