@@ -1,7 +1,7 @@
 # amaze-github-automation
 GitHub issue automation api function
 
-API responsible to be used along with this [GitHub app](https://github.com/apps/amaze-issue-automation)
+API responsible to be used along with this [GitHub app](https://github.com/marketplace/issues-rest-api-function)
 
 Want to automate GitHub issue creation? Use this app and get away with the burden of implementing GitHub authentication APIs
 
